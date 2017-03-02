@@ -24,13 +24,20 @@ run(1, 4) - печатает "2\n" и "3\n"
 
 sub run {
     my ($x, $y) = @_;
-    for (my $i = $x; $i <= $y; $i++) {
-
-        # ...
-        # Проверка, что число простое
-        # ...
-
-	print "$i\n";
+    my %hash;
+    my $n = ($y-1)/2;
+    for my $key_value (1..$n) { $hash { $key_value } = undef; }
+    for my $str_iter (1..(sqrt($y)-1)/2) {
+        for my $col_iter (1..($n-$str_iter)/(2*$str_iter+1)) {
+            delete $hash{$str_iter+$col_iter+2*$str_iter*$col_iter};
+        }
+    }
+    for my $key_value (keys %hash) {
+        $hash{ $key_value } = 2*$key_value+1;
+    }
+    $hash { 0 } = 2 if ($y >= 2);
+    for my $hash_value (sort { $a <=> $b } values %hash) {
+        print "$hash_value\n" if ($hash_value >= $x);
     }
 }
 

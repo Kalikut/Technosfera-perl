@@ -47,13 +47,13 @@ sub calculate {
 							$from{$source} = $drain;
 							$to{$drain} = $source;
 							if (scalar @free) {
-								$drain = $free[rand(scalar @free)];
-								delete $free{$drain};
+								$source = $free[rand(scalar @free)];
+								$first = $source;
 								@free = map {$_} keys %free;
 							}
 							else
 							{
-								$drain = $first;
+								$source = $first;
 							}
 							$cycle_length = 0;
 						}

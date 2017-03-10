@@ -33,6 +33,7 @@ sub run {
     my $x2 = undef;
 
     eval {
+        unless ($a_value) { die; }
         my $d_value = sqrt($b_value**2 - 4*$a_value*$c_value);
         $x1 = (-$b_value + $d_value) / (2*$a_value);
         $x2 = (-$b_value - $d_value) / (2*$a_value);

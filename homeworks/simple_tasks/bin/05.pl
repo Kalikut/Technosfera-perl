@@ -31,9 +31,10 @@ sub run {
     $str = $substr.$str;
     my $num = 0;
     my $substr_len = length($substr);
-    my $rindex = undef;
+    my $index = $substr_len;
+    my $str_len = length($str);
 
-    while ($rindex = rindex($str, $substr)) { ++$num; substr($str, $rindex, $substr_len) = ""; }
+    while (($index = (index($str, $substr, $index))) >= $substr_len) { ++$num; $index = ($index + $substr_len) % $str_len; }
 
     print "$num\n";
 }

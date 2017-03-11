@@ -16,7 +16,7 @@ sub calculate {
 	while (@res != @members) {
 		@res = ();
 		my %free = map {$_ => undef} @members;
-		my @free = map {$_} keys %free;
+		my @free = keys %free;
 		my %from = ();
 		my %to = ();
 		my $source = $free[rand(@free)];
@@ -28,7 +28,7 @@ sub calculate {
 			if (@free) {
 				$drain = $free[rand(@free)];
 				delete $free{$drain};
-				@free = map {$_} keys %free;
+				@free = keys %free;
 			}
 			else
 			{

@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 
+use 5.010;
 use strict;
 use warnings;
 
@@ -15,17 +16,12 @@ exit;
 sub parse_file {
     my $file = shift;
 
-    # you can put your code here
-
     my $info = { 'total' => { 'time' => {} } };
     my $result = {};
     my $data_types = {};
 
     open my $fd, "-|", "bunzip2 < $file" or die "Can't open '$file': $!";
     while (my $log_line = <$fd>) {
-
-        # you can put your code here
-        # $log_line contains line from log file
 
         if (not $log_line =~ m/^(\S+)\s+\[(\d+\/\w+\/\d+:\d+:\d+)\S*\s+\S+\s+"[^"]*"\s+(\d*)\s+(\d*)\N*"([^"]*)"$/) { next; }
 
@@ -40,14 +36,10 @@ sub parse_file {
         if (not exists $ip_info->{'code'}) { $ip_info->{'code'} = {}; }
         my $msg_code = $ip_info->{'code'};
         if (not exists $msg_code->{$3}) { $msg_code->{$3} = []; }
-        push @{$msg_code->{$3}}, $4, $5 eq '-'?0:$5;
+        push @{$msg_code->{$3}}, $4, $5 eq '-'?1:$5;
 
     }
     close $fd;
-
-    # you can put your code here
-
-    #77.60.102.125
     
     for my $ip (keys %{$info}) {
         $result->{$ip} = {};
@@ -80,8 +72,6 @@ sub parse_file {
         for my $type (keys %{$result->{$ip}->{'data_types'}}) { $result->{'total'}->{'data_types'}->{$type} += $result->{$ip}->{'data_types'}->{$type}; }
     }
 
-    #p $info->{'total'};    
-    #p $result->{'total'};
 
     return ($result, $data_types);
 }
@@ -90,22 +80,20 @@ sub report {
     my $result = shift;
     my $data_types = shift;
 
-    # you can put your code here
 
-    print 'IP   count   avg data';
-    for my $type (sort keys %{$data_types}) { print " data_$type"; }
+    print "IP\tcount\tavg\tdata";
+    for my $type (sort keys %{$data_types}) { print "\t$type"; }
     print "\n";
     my @arr;
     for my $ip (keys %{$result}) {
         push @arr, [($ip, $result->{$ip}->{'count'})];
-        if (not defined $result->{$ip}->{'count'}) { p $result->{$ip}; }
     }
     my @sorted_arr = sort { $b->[1] <=> $a->[1] } @arr;
     for my $iter (0..10) {
         my $ip = $sorted_arr[$iter]->[0];
         my $ip_info = $result->{$ip};
         my $avg = $ip_info->{'count'}/$ip_info->{'time'};
-        print sprintf "%s %d  %.2f    %d", $ip,  $ip_info->{'count'},   $avg,  $ip_info->{'data'};
+        print sprintf "%s\t%d\t%.2f\t%d", $ip,  $ip_info->{'count'},   $avg,  $ip_info->{'data'};
         for my $type (sort keys %{$data_types}) {
             my $ret;
             if (exists $ip_info->{'data_types'}->{$type}) {
@@ -113,7 +101,7 @@ sub report {
             } else {
                 $ret = "0";
             }
-            print "   $ret"; }
+            print "\t$ret"; }
         print "\n";
     }
 
